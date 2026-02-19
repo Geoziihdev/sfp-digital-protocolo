@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="320" height="80" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="80" rx="10" fill="#1A5FB4"/>
+
+  <circle cx="50" cy="40" r="22" fill="#ffffff"/>
+  <rect x="42" y="30" width="16" height="20" fill="#1A5FB4"/>
+
+  <text x="185" y="42" font-size="24" font-family="Arial, sans-serif" fill="#ffffff" font-weight="bold" text-anchor="middle">
+    SFP Digital
+  </text>
+
+  <text x="185" y="62" font-size="14" font-family="Arial, sans-serif" fill="#D6E4F5" text-anchor="middle">
+    Sistema de Protocolos
+  </text>
+</svg>
