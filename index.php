@@ -21,8 +21,8 @@ function buscarProtocolos($caminho) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo = trim($_POST['tipo'] ?? '');
-$assunto = trim($_POST['assunto'] ?? '');
-$descricao = trim($_POST['descricao'] ?? '');
+    $assunto = trim($_POST['assunto'] ?? '');
+    $descricao = trim($_POST['descricao'] ?? '');
 
     $novoProtocolo = [
         'id' => uniqid(),
