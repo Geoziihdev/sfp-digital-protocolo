@@ -6,41 +6,40 @@ $erro = null;
 $sucesso = null;
 
 function buscarUsuarios($caminho) {
-    if (!file_exists($caminho)) {
-        return [];
-    }
+    if (!file_exists($caminho)) return [];
     $dados = json_decode(file_get_contents($caminho), true);
     return is_array($dados) ? $dados : [];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $usuarioNovo = trim($_POST['usuario'] ?? '');
     $senhaNova   = $_POST['senha'] ?? '';
 
-    $usuariosAtuais = buscarUsuarios($arquivoUsuarios);
-
-    $jaExiste = false;
-    foreach ($usuariosAtuais as $u) {
-        if ($u['usuario'] === $usuarioNovo) {
-            $jaExiste = true;
-            break;
-        }
-    }
-
-    if (strlen($senhaNova) < 6) {
-        $erro = "A senha é muito curta. Use pelo menos 6 caracteres.";
-    } elseif (empty($usuarioNovo)) {
-        $erro = "O campo usuário é obrigatório.";
-    } elseif ($jaExiste) {
-        $erro = "Este nome de usuário já está em uso.";
+    if ($usuarioNovo === '' || $senhaNova === '') {
+        $erro = "Preencha todos os campos.";
+    } elseif (strlen($senhaNova) < 6) {
+        $erro = "Senha deve ter no mínimo 6 caracteres.";
     } else {
-        $usuariosAtuais[] = [
-            'usuario' => $usuarioNovo,
-            'senha'   => $senhaNova 
-        ];
-        
-        file_put_contents($arquivoUsuarios, json_encode($usuariosAtuais, JSON_PRETTY_PRINT));
-        $sucesso = "Cadastro realizado com sucesso! Você já pode entrar.";
+
+        $usuarios = buscarUsuarios($arquivoUsuarios);
+
+        foreach ($usuarios as $u) {
+            if ($u['usuario'] === $usuarioNovo) {
+                $erro = "Usuário já existe.";
+                break;
+            }
+        }
+
+        if (!$erro) {
+            $usuarios[] = [
+                'usuario' => $usuarioNovo,
+                'senha' => password_hash($senhaNova, PASSWORD_DEFAULT)
+            ];
+
+            file_put_contents($arquivoUsuarios, json_encode($usuarios, JSON_PRETTY_PRINT), LOCK_EX);
+            $sucesso = "Cadastro realizado com sucesso!";
+        }
     }
 }
 ?>
