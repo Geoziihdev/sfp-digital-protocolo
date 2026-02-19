@@ -4,35 +4,33 @@ $arquivoUsuarios = 'usuarios.json';
 $erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $usuarioDigitado = trim($_POST['usuario'] ?? '');
     $senhaDigitada   = $_POST['senha'] ?? '';
 
-    if (file_exists($arquivoUsuarios)) {
-        $conteudo = file_get_contents($arquivoUsuarios);
-        $usuarios = json_decode($conteudo, true); 
-        
+    if (!file_exists($arquivoUsuarios)) {
+        $erro = "Base de usuários não encontrada.";
+    } else {
+
+        $usuarios = json_decode(file_get_contents($arquivoUsuarios), true);
         $autenticado = false;
 
-        if (is_array($usuarios)) {
-            foreach ($usuarios as $u) {
-                if (isset($u['usuario']) && isset($u['senha'])) {
-                    if ($u['usuario'] === $usuarioDigitado && $u['senha'] === $senhaDigitada) {
-                        $autenticado = true;
-                        break;
-                    }
-                }
+        foreach ($usuarios as $u) {
+            if ($u['usuario'] === $usuarioDigitado &&
+                password_verify($senhaDigitada, $u['senha'])) {
+
+                $_SESSION['usuario'] = $usuarioDigitado;
+                $autenticado = true;
+                break;
             }
         }
 
         if ($autenticado) {
-            $_SESSION['usuario'] = $usuarioDigitado;
             header("Location: index.php");
             exit;
         } else {
-            $erro = "Usuário ou senha inválidos. Verifique os dados.";
+            $erro = "Usuário ou senha inválidos.";
         }
-    } else {
-        $erro = "Erro interno: Base de dados não encontrada.";
     }
 }
 ?>
@@ -68,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1 class="text-gray-800 font-bold text-xl mb-1">
                 Sistema de Protocolo Eletrônico
             </h1>
-            <p class="text-sm text-gray-600">Acesso restrito</p>
+            <p class="text-sm text-gray-600">Acesso restrito </p>
         </header>
 
         <?php if($erro): ?>
